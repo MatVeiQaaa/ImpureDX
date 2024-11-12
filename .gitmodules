@@ -1,0 +1,9 @@
+[submodule "ext/kiero"]
+	path = ext/kiero
+	url = git@github.com:Rebzzel/kiero.git
+[submodule "ext/minhook"]
+	path = ext/minhook
+	url = git@github.com:TsudaKageyu/minhook.git
+[submodule "ext/imgui"]
+	path = ext/imgui
+	url = git@github.com:ocornut/imgui.git
