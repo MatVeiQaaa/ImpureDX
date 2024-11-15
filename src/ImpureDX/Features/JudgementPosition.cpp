@@ -9,60 +9,88 @@
 //	changeSpriteFromInfo ChangeSpriteFromInfo = (changeSpriteFromInfo)GetProcAddress(handle, "XCd229cc00002e");
 //}
 
-bool FJudgementPosition::Init(uintptr_t moduleBase) {
-	FJudgementPosition::mModuleBase = moduleBase;
-	FJudgementPosition::m_hAfpCore = afpcore::handle;
+bool FAfpTestPad::Init(uintptr_t moduleBase) {
+	FAfpTestPad::mModuleBase = moduleBase;
+	FAfpTestPad::m_hAfpCore = afpcore::handle;
 	return true;
 }
 
-bool FJudgementPosition::Deinit() {
+bool FAfpTestPad::Deinit() {
 	return true;
 }
 
-void FJudgementPosition::HideAllSpriteLayers() {
+void FAfpTestPad::HideAllSpriteLayers() {
 	for (int i = 0; i < *afpcore::layersMaxCount; i++) {
-		unsigned int* layerType = (unsigned int*)((*afpcore::layerArray)[i] + 0x0);
-		unsigned int* streamId = (unsigned int*)((*afpcore::layerArray)[i] + 0x4);
-		if ((int)layerType != 0x0 && (*streamId != 0x70000005)) *layerType = 0;
+		unsigned int* layerId = (unsigned int*)((*afpcore::layerArray)[i] + 0x18);
+		if ((int)layerId != 0x18) afpcore::LayerSetAttribute(*layerId, 1, 0);
 	}
 }
 
-void FJudgementPosition::SetAllLayersPos() {
+void FAfpTestPad::SetAllLayersPos() {
 	float position[2] = { 100.f, 100.f };
 	for (int i = 0; i < *afpcore::layersMaxCount; i++) {
 		unsigned int* layerId = (unsigned int*)((*afpcore::layerArray)[i] + 0x18);
-		if ((int)layerId != 0x18) afpcore::SetLayerPosition(*layerId, position);
+		if ((int)layerId != 0x18) afpcore::LayerSetPosition(*layerId, position);
 	}
 }
 
-void FJudgementPosition::TestDump(unsigned int idx) {
+void FAfpTestPad::TestDump(unsigned int idx) {
 	afpcore::GetInfo(idx, 0x78000000, 0x2000, 0x2000);
 }
 
-void FJudgementPosition::TestRender(unsigned int layerIdIn, unsigned int packageId, const char* textureName) {
+void FAfpTestPad::TestRenderSprite(unsigned int layerIdIn, unsigned int packageId, const char* textureName) {
 	void* buffer[sizeof(int) * 32];
 	void* buffer2[sizeof(int) * 32];
-	afputils::GetTextureInfo(buffer, packageId, textureName);
-	afputils::TextureToSpriteInfo(buffer2, buffer);
-	//afpcore::LayerSetInfoFromSprite(layerId, buffer2); // theoretically can render to existing layers, but would require hooking afp::render, as game code constantly sets the original sprite back.
+	if (packageId) {
+		afputils::GetBitmapInfoFromPackage(buffer, packageId, textureName);
+	}
+	else {
+		afputils::GetBitmapInfo(buffer, textureName);
+	}
+	afputils::BitmapToSpriteInfo(buffer2, buffer);
 
-	unsigned int layerId = afpcore::CreateLayerFromSprite(buffer2, 0);
+	unsigned int layerId = layerIdIn;
+	if (layerId) {
+		afpcore::LayerSetInfoFromSprite(layerIdIn, buffer2);
+	}
+	else {
+		layerId = afpcore::CreateLayerFromSprite(buffer2, 0);
+	}
 
 	float position[2] = { 100.f, 100.f };
-	afpcore::SetLayerZ(layerId, 200);
-	afpcore::SetBlendMode(layerId, 1, 1);
-	afpcore::SetLayerPosition(layerId, position);
+	afpcore::LayerSetZ(layerId, 1);
+	afpcore::LayerSetAttribute(layerId, 1, 1); // Visibility true.
+	afpcore::LayerSetPosition(layerId, position);
 
+	//for (int i = 0; i < *afpcore::layersMaxCount; i++) {
+	//	unsigned int inLayerId = layerId;
+	//	unsigned int* layerId = (unsigned int*)((*afpcore::layerArray)[i] + 0x18);
+	//	if ((int)layerId != 0x18 && *layerId == inLayerId) {
+	//		unsigned int* playworkId = (unsigned int*)((*afpcore::layerArray)[i] + 0x210);
+	//		for (unsigned int parentPlayworkId = *playworkId; (parentPlayworkId & 0x80000000) == 0; parentPlayworkId = afpcore::GetPlayworkParent(parentPlayworkId, 6)) {
+	//			afpcore::SetPlayworkOpt(parentPlayworkId, 0x1006, 13, 0); // blend mode
+	//			afpcore::SetPlayworkOpt(parentPlayworkId, 0x101E, 1, 0);
+	//		}
+	//	}
+	//}
+}
 
-	for (int i = 0; i < *afpcore::layersMaxCount; i++) {
-		unsigned int inLayerId = layerId;
-		unsigned int* layerId = (unsigned int*)((*afpcore::layerArray)[i] + 0x18);
-		if ((int)layerId != 0x18 && *layerId == inLayerId) {
-			unsigned int* playworkId = (unsigned int*)((*afpcore::layerArray)[i] + 0x210);
-			for (unsigned int parentPlayworkId = *playworkId; (parentPlayworkId & 0x80000000) == 0; parentPlayworkId = afpcore::GetPlayworkParent(parentPlayworkId, 6)) {
-				afpcore::SetPlayworkOpt(parentPlayworkId, 0x1006, 13, 0); // blend mode
-				afpcore::SetPlayworkOpt(parentPlayworkId, 0x101E, 1, 0);
-			}
-		}
+void FAfpTestPad::TestRenderMovie(unsigned int layerIdIn, unsigned int packageId, const char* movieName) {
+	afputils::MovieInfo movieInfo;
+
+	if (packageId) {
+		afputils::GetMovieInfoFromPackage(&movieInfo, packageId, movieName);
 	}
+	else {
+		afputils::GetMovieInfo(&movieInfo, movieName);
+	}
+
+	unsigned int layerId = afpcore::CreateLayerFromStream(movieInfo.streamId, movieInfo.name, 0, 0);
+
+	if (afpcore::AfpIdIsValid(5, layerId) < 0) return;
+
+	afpcore::LayerMovieRefer(layerId, "/");
+	afpcore::LayerSetAttribute(layerId, 0x200, 0x200); // Stop after one loop.
+	afpcore::LayerSetAttribute(layerId, 1, 1); // Start the loop.
+	afpcore::LayerSetZ(layerId, 200);
 }

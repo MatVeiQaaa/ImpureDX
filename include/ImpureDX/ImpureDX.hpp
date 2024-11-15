@@ -11,6 +11,7 @@ private:
 	int layerIdx = 0;
 	int packageIdx = 0;
 	char textureName[MAXCHAR];
+	char movieName[MAXCHAR];
 };
 
 class ImpureDX : public ModBody {
@@ -22,7 +23,7 @@ public:
 
 	ImpureDXMenu mMenu;
 
-	FJudgementPosition mFJudgementPosition;
+	FAfpTestPad mFAfpTestPad;
 private:
 	ImpureDX() = default;
 	~ImpureDX() = default;
