@@ -18,18 +18,36 @@
     <ClInclude Include="..\..\include\ImpureDX\ImpureDX.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Features\JudgementPosition.hpp">
+    <ClInclude Include="Features\AfpTestPad.hpp">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="AfpCore.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Features\Unrandomizer.hpp">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="Features\GameState.hpp">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="Features\VersionManager.hpp">
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImpureDX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Features\JudgementPosition.cpp">
+    <ClCompile Include="Features\AfpTestPad.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="Features\Unrandomizer.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="Features\GameState.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="Features\VersionManager.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
   </ItemGroup>

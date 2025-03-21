@@ -1,4 +1,4 @@
-#include "JudgementPosition.hpp"
+#include "AfpTestPad.hpp"
 #include "AfpCore.hpp"
 #include <iostream>
 

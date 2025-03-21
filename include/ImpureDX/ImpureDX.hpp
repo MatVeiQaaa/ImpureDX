@@ -1,8 +1,8 @@
 #include "BaseModels/ModBody.hpp"
 #include "BaseModels/ImGuiMenu.hpp"
-#include "../ImpureDX/Features/JudgementPosition.hpp"
+#include "BaseModels/ModFeature.hpp"
 
-class ImpureDXMenu : public ImGuiMenu {
+class AfpTestPadMenu : public ImGuiMenu {
 public:
 	void Loop();
 	void MessageHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -14,6 +14,13 @@ private:
 	char movieName[MAXCHAR];
 };
 
+class ImpureDXMenu : public ImGuiMenu {
+public:
+	void Loop();
+	void MessageHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+private:
+};
+
 class ImpureDX : public ModBody {
 public:
 
@@ -22,8 +29,12 @@ public:
 	bool Unhook();
 
 	ImpureDXMenu mMenu;
+	AfpTestPadMenu mAfpTestPadMenu;
 
-	FAfpTestPad mFAfpTestPad;
+	ModFeature* mVersionManager;
+	ModFeature* mFAfpTestPad;
+	ModFeature* mGameState;
+	ModFeature* mUnrandomizer;
 private:
 	ImpureDX() = default;
 	~ImpureDX() = default;

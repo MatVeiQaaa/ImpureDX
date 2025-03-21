@@ -20,10 +20,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ImpureDX\ImpureDX.hpp" />
-    <ClCompile Include="Features\JudgementPosition.cpp" />
+    <ClCompile Include="Features\AfpTestPad.cpp" />
+    <ClCompile Include="Features\GameState.cpp" />
+    <ClCompile Include="Features\Unrandomizer.cpp" />
+    <ClCompile Include="Features\VersionManager.cpp" />
     <ClCompile Include="ImpureDX.cpp" />
     <ClInclude Include="AfpCore.hpp" />
-    <ClInclude Include="Features\JudgementPosition.hpp" />
+    <ClInclude Include="Features\AfpTestPad.hpp" />
+    <ClInclude Include="Features\GameState.hpp" />
+    <ClInclude Include="Features\Unrandomizer.hpp" />
+    <ClInclude Include="Features\VersionManager.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
